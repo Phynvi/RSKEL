@@ -1,5 +1,6 @@
 package org.whired.rskel;
 
+import org.whired.rskel.world.World;
 import java.util.Arrays;
 import java.util.HashSet;
 

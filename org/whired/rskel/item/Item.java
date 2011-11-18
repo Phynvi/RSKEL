@@ -7,6 +7,7 @@ package org.whired.rskel.item;
 public class Item {
 	private final String name;
 	private final int quantity;
+	private ItemContainer container; // TODO: use of this might be unecessary
 	
 	/**
 	 * Creates a new item with the specified name
@@ -30,5 +31,21 @@ public class Item {
 	@Override
 	public String toString() {
 		return this.name + " x" + this.quantity;
+	}
+	
+	/**
+	 * Sets the container for this item
+	 * @param container the container to set
+	 */
+	protected void setContainer(ItemContainer container) {
+		this.container = container;
+	}
+	
+	/**
+	 * Gets the name of this item
+	 * @return the name
+	 */
+	public String getName() {
+		return this.name;
 	}
 }

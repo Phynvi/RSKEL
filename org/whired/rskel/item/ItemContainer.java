@@ -2,14 +2,14 @@ package org.whired.rskel.item;
 
 import java.util.LinkedList;
 import org.whired.rskel.item.event.ItemEventListener;
-import org.whired.rskel.player.Player;
+import org.whired.rskel.item.event.ItemListEventListener;
+import org.whired.rskel.entity.Player;
 
 /**
  * A container for items
  * @author Whired
  */
-public abstract class ItemContainer implements ItemEventListener {
-	private final LinkedList<Item> items;
+public abstract class ItemContainer extends ItemList implements ItemEventListener {
 	private final int capacity;
 	private final Player owner;
 	
@@ -21,25 +21,6 @@ public abstract class ItemContainer implements ItemEventListener {
 	public ItemContainer(Player owner, int capacity) {
 		this.owner = owner;
 		this.capacity = capacity;
-		this.items = new LinkedList<Item>();
-	}
-
-	/**
-	 * Creates a new container with the specified capacity and initial items
-	 * @param owner the owner of this container
-	 * @param capacity the maximum amount of items that can be stored in this container
-	 * @param items the items that will be initially present in this container
-	 */
-	public ItemContainer(Player owner, int capacity, Item[] items) {
-		this(owner, capacity);
-		if(capacity < items.length)
-			throw new IllegalArgumentException("items.length cannot be greater than capacity");
-		try {
-			addAll(items);
-		}
-		catch (ContainerOverflowException ex) {
-			
-		}
 	}
 	
 	/**
@@ -58,53 +39,11 @@ public abstract class ItemContainer implements ItemEventListener {
 	}
 	
 	/**
-	 * Gets all items currently contained in this container
-	 * @return the items as an array
-	 */
-	public Item[] getAll() {
-		return this.items.toArray(new Item[this.items.size()]);
-	}
-	
-	/**
-	 * Gets the item at the specified index (slot), or null if the slot is empty
-	 * @param index the index of the item to get
-	 * @return the item
-	 */
-	public Item get(int index) {
-		return this.items.get(index);
-	}
-	
-	/**
-	 * Destroys all items in this container
-	 */
-	public void empty() {
-		while(!this.items.isEmpty())
-			remove(this.items.getLast());
-	}
-	
-	/**
-	 * Removes the specified item from this container
-	 * @param item the item to remove
-	 */
-	public void remove(Item item) {
-		itemRemoved(item);
-		this.items.remove(item);
-	}
-	
-	/**
-	 * Removes the item at the specified index
-	 * @param index the index of the item to remove
-	 */
-	public void remove(int index) {
-		remove(this.items.get(index));
-	}
-	
-	/**
 	 * Transfers an item from this container to another container
 	 * @param item the item to transfer
 	 * @param to the container to transfer to
 	 */
-	public void transferItem(Item item, ItemContainer to) {
+	public void transfer(Item item, ItemContainer to) {
 		remove(item);
 		to.add(item);
 	}
@@ -114,8 +53,8 @@ public abstract class ItemContainer implements ItemEventListener {
 	 * @param to the container to transfer to
 	 * @throws ContainerOverflowException if the specified container does not meet the required capacity
 	 */
-	public void transferAllItems(ItemContainer to) throws ContainerOverflowException {
-		Item[] iarr = this.items.toArray(new Item[this.items.size()]);
+	public void transferAll(ItemContainer to) throws ContainerOverflowException {
+		Item[] iarr = getAll();
 		empty();
 		to.addAll(iarr);
 	}
@@ -123,16 +62,27 @@ public abstract class ItemContainer implements ItemEventListener {
 	/**
 	 * Adds the specified item to this container
 	 * @param item the item to add
+	 * @return whether or not the item could be added
 	 */
+	@Override
 	public boolean add(Item item) {
-		if(this.items.size() < capacity) {
-			this.items.addLast(item);
-			itemAdded(item);
-			return true;
+		if(getSize() < capacity) {
+			item.setContainer(this);
+			return super.add(item);
 		}
 		else {
 			return false;
 		}
+	}
+	
+	public void drop(int index) {
+		Item i = remove(index);
+		itemDropped(i);
+	}
+	
+	public void drop(Item item) {
+		remove(item);
+		itemDropped(item);
 	}
 	
 	/**

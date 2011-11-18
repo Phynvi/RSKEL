@@ -1,9 +1,12 @@
 package org.whired.rskel;
 
-import java.awt.Point;
+import org.whired.rskel.item.WorldItem;
+import org.whired.rskel.world.World;
+import org.whired.rskel.geom.Point3D;
 import org.whired.rskel.item.Item;
 import org.whired.rskel.item.ItemContainer;
-import org.whired.rskel.player.Player;
+import org.whired.rskel.item.event.ItemListEventListener;
+import org.whired.rskel.entity.Player;
 import org.whired.rskel.player.PlayerList;
 import org.whired.rskel.player.event.PlayerListEventListener;
 
@@ -15,65 +18,88 @@ public class Rskel {
 
 	public static void main(String[] args) {
 		// Testing
-		World testWorld = new World();
+		final World testWorld = new World();
+		testWorld.getItems().addListener(new ItemListEventListener<WorldItem>(){
+
+			@Override
+			public void itemAdded(WorldItem item) {
+				System.out.println("Debug: "+item+" added to "+testWorld);
+			}
+
+			@Override
+			public void itemRemoved(WorldItem item) {
+				System.out.println("Debug: "+item+" removed from "+testWorld);
+			}
+		});
 		PlayerListEventListener testListener = new PlayerListEventListener() {
 
 			@Override
 			public void playerAdded(PlayerList list, Player player) {
-				System.out.println(player + " was added to " + list);
+				System.out.println("Debug: " + player + " has logged in");
 			}
 
 			@Override
 			public void playerRemoved(PlayerList list, Player player) {
-				player.getWorld().createMessage(player + " has logged out.");
+				System.out.println("Debug: "+ player + " has logged out");
 			}
 			
 			
 			
 		};
 		testWorld.getPlayers().addListener(testListener);
-		Player testPlayer = new Player("Whired"){
+		Player testPlayer = new Player("Whired", testWorld, new Point3D(200, 300, 0), 99){
 			@Override
 			public void sendMessage(String message) {
-				System.out.println(this.getName() + ": "+message);
+				System.out.println("To " + this.getName() + ": "+message);
 			}
 
 			@Override
-			public void playerMoved(Point oldLocation, Point newLocation) {
-				this.getWorld().createMessage(this.getName() + " moved from "+oldLocation+" to "+newLocation);
+			public void entityMoved(Point3D from, Point3D to) {
+				System.out.println("Debug: "+ this.getName() + " moved from "+from+" to "+to);
+			}
+
+			@Override
+			public void entityHealthChanged(int oldHealth, int newHealth) {
+				System.out.println("Debug: "+ this.getName() + " Health update: "+newHealth+" from "+oldHealth);
+			}
+
+			@Override
+			public void entityMaxHealthChanged(int oldMaxHealth, int newMaxHealth) {
+				throw new UnsupportedOperationException("Not supported yet.");
+			}
+
+			@Override
+			public void entityDied() {
+				System.out.println(this.getName() + " has died.");
 			}
 		};
-		testWorld.getPlayers().addPlayer(testPlayer);
-		
-		Player testPlayer2 = new Player("Admin"){
-			@Override
-			public void sendMessage(String message) {
-				System.out.println(this.getName() + ": "+message);
-			}
+		testWorld.getPlayers().add(testPlayer);
+		final ItemContainer inventory = new ItemContainer(testPlayer, 1) {
 
 			@Override
-			public void playerMoved(Point oldLocation, Point newLocation) {
-				this.getWorld().createMessage(this.getName() + " moved from "+oldLocation+" to "+newLocation);
+			public void itemDropped(Item item) {
+				this.getOwner().getWorld().createMessage(this.getOwner().getName() + " has dropped an item at "+this.getOwner().getLocation());
 			}
-		};testWorld.getPlayers().addPlayer(testPlayer2);
-		ItemContainer inventory = new ItemContainer(testPlayer, 1, new Item[] { new Item("Crystal of Entry", 7)}) {
+		};
+		inventory.addListener(new ItemListEventListener(){
 
 			@Override
 			public void itemAdded(Item item) {
-				this.getOwner().getWorld().createMessage(this.getOwner().getName()+" obtained a "+item.toString());
+				System.out.println(inventory.getOwner() + " got "+item);
 			}
 
 			@Override
 			public void itemRemoved(Item item) {
-				this.getOwner().getWorld().createMessage(this.getOwner().getName()+" lost a "+item.toString());
+				System.out.println(inventory.getOwner() + " lost "+item);
 			}
-		};
+		});
+		inventory.add(new Item("Crystal of entry", 7));
 		testPlayer.setInventory(inventory);
 		
-		testPlayer.setLocation(200, 300);
-		testPlayer2.setLocation(testPlayer.getLocation());
+		testPlayer.setLocation(200, 300, 0);
+		testPlayer.increaseHealth(100);
 		testWorld.createMessage("Hello to all!");
-		testWorld.createMessage(testPlayer.getName() + " has an item: "+testPlayer.getInventory().get(0));
+		System.out.println("Debug: "+testPlayer.getName() + " has an item: "+testPlayer.getInventory().get(0));
 		Server testServer = new Server(new World[]{testWorld}) {
 
 			@Override

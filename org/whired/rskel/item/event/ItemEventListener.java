@@ -8,14 +8,10 @@ import org.whired.rskel.item.Item;
  */
 public interface ItemEventListener {
 	
-	/**
-	 * Invoked when an item is added to a container
-	 * @param item the item that was added
-	 */
-	public void itemAdded(Item item);
+	
 	
 	/**
-	 * Invoked when an item is removed from a container
+	 * Invoked when an item is dropped
 	 */
-	public void itemRemoved(Item item);
+	public void itemDropped(Item item);
 }

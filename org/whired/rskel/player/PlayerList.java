@@ -1,8 +1,9 @@
 package org.whired.rskel.player;
 
+import org.whired.rskel.entity.Player;
 import java.util.HashMap;
 import java.util.HashSet;
-import org.whired.rskel.World;
+import org.whired.rskel.world.World;
 import org.whired.rskel.player.event.PlayerListEventListener;
 
 /**
@@ -26,8 +27,7 @@ public class PlayerList {
 	 * Adds a player to this list
 	 * @param player the player to add
 	 */
-	public void addPlayer(Player player) {
-		player.setWorld(this.world);
+	public void add(Player player) {
 		players.put(player.getName(), player);
 		for(PlayerListEventListener listener : listeners) {
 			listener.playerAdded(this, player);
@@ -38,7 +38,7 @@ public class PlayerList {
 	 * Removes a player from this list
 	 * @param player the player to remove
 	 */
-	public void removePlayer(Player player) {
+	public void remove(Player player) {
 		players.remove(player.getName());
 		for(PlayerListEventListener listener : listeners) {
 			listener.playerRemoved(this, player);
