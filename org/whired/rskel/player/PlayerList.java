@@ -1,6 +1,5 @@
 package org.whired.rskel.player;
 
-import org.whired.rskel.entity.Player;
 import java.util.HashMap;
 import java.util.HashSet;
 import org.whired.rskel.world.World;

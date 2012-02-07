@@ -1,9 +1,7 @@
 package org.whired.rskel.item;
 
-import java.util.LinkedList;
 import org.whired.rskel.item.event.ItemEventListener;
-import org.whired.rskel.item.event.ItemListEventListener;
-import org.whired.rskel.entity.Player;
+import org.whired.rskel.player.Player;
 
 /**
  * A container for items
@@ -75,11 +73,21 @@ public abstract class ItemContainer extends ItemList implements ItemEventListene
 		}
 	}
 	
+	/**
+	 * Removes and invokes {@link org.whired.rskel.item.event.ItemEventListener#itemDropped(org.whired.rskel.item.Item)}
+	 * for the item at the specified index
+	 * @param index the index of the item
+	 */
 	public void drop(int index) {
 		Item i = remove(index);
 		itemDropped(i);
 	}
 	
+	/**
+	 * Removes and invokes {@link org.whired.rskel.item.event.ItemEventListener#itemDropped(org.whired.rskel.item.Item)}
+	 * for the specified item
+	 * @param item the item
+	 */
 	public void drop(Item item) {
 		remove(item);
 		itemDropped(item);

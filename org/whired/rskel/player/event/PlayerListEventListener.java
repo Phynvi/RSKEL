@@ -1,6 +1,6 @@
 package org.whired.rskel.player.event;
 
-import org.whired.rskel.entity.Player;
+import org.whired.rskel.player.Player;
 import org.whired.rskel.player.PlayerList;
 
 /**

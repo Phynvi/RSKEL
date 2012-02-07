@@ -1,6 +1,7 @@
-package org.whired.rskel.item;
+package org.whired.rskel.world;
 
 import org.whired.rskel.geom.Point3D;
+import org.whired.rskel.item.Item;
 
 
 /**

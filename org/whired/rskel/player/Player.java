@@ -1,5 +1,7 @@
-package org.whired.rskel.entity;
+package org.whired.rskel.player;
 
+import org.whired.rskel.entity.FightableEntity;
+import org.whired.rskel.item.Item;
 import org.whired.rskel.world.World;
 import org.whired.rskel.geom.Point3D;
 import org.whired.rskel.item.ItemContainer;
@@ -12,6 +14,13 @@ public abstract class Player extends FightableEntity {
 	private ItemContainer bank;
 	private ItemContainer inventory;
 	private ItemContainer beastOfBurden;
+	private EquipmentContainer equipment = new EquipmentContainer(this) {
+
+		@Override
+		public void itemDropped(Item item) {
+		}
+		
+	};
 
 	/**
 	 * Creates a player with the given name

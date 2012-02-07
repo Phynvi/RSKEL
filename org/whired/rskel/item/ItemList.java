@@ -93,4 +93,16 @@ public class ItemList<I extends Item> {
 			l.itemAdded(item);
 		return true;
 	}
+	
+	/**
+	 * Sets the item at the specified index to the specified item
+	 * @param index the index of the item to set
+	 * @param newItem the item to set
+	 * @return the item that was replaced, or {@code null} if the slot was empty
+	 */
+	public I set(int index, I newItem) {
+		I removed = items.get(index);
+		items.set(index, newItem);
+		return removed;
+	}
 }
